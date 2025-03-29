@@ -6,7 +6,6 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 
-                // Image
                 Image("welcome") // Make sure the image name matches your asset
                     .resizable()
                     .scaledToFit()
