@@ -9,20 +9,18 @@ import SwiftUI
 
 struct RoadMapView: View {
     var body: some View {
-        NavigationView {
-            VStack {
-                Spacer()
-                NavigationLink(destination: pickCountry()) {
-                    Text("Go to Country Selection")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
-                }
-                Spacer()
+        VStack {
+            Spacer()
+            NavigationLink(destination: pickCountry()) {
+                Text("Go to Country Selection")
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(10)
             }
-            .navigationBarTitle("Roadmap", displayMode: .inline)
+            Spacer()
         }
+        .navigationBarTitle("Roadmap", displayMode: .inline)
     }
 }
 
