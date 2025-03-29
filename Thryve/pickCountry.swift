@@ -1,10 +1,3 @@
-//
-//  pickCountry.swift
-//  Thryve
-//
-//  Created by Praggnya Kanungo on 3/29/25.
-//
-
 import SwiftUI
 
 struct pickCountry: View {
@@ -12,6 +5,20 @@ struct pickCountry: View {
     @State private var selectedLandSize = "small"
     let countries = ["USA", "Canada", "Mexico", "Brazil", "UK"]
     let landSizes = ["small", "medium", "large"]
+
+    // Computed property to determine the budget based on land size
+    var budget: Int {
+        switch selectedLandSize {
+        case "small":
+            return 1000
+        case "medium":
+            return 5000
+        case "large":
+            return 10000
+        default:
+            return 1000  // Default case to handle unexpected values
+        }
+    }
 
     var body: some View {
         VStack {
@@ -28,19 +35,20 @@ struct pickCountry: View {
             .padding()
 
             Picker("Land Size", selection: $selectedLandSize) {
-                ForEach(landSizes, id: \.self) { sizes in
-                    Text(sizes)
+                ForEach(landSizes, id: \.self) { size in
+                    Text(size)
                 }
             }
             .pickerStyle(MenuPickerStyle())
             .padding()
-            
-            Text("Budget: $1000")
+
+            // Display the budget based on the selected land size
+            Text("Budget: $\(budget)")
                 .padding()
 
             Button("Submit") {
                 // Handle the submission logic here
-                print("Submission Confirmed")
+                print("Submission Confirmed with budget of $\(budget)")
             }
             .foregroundColor(.white)
             .padding()
