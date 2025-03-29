@@ -3,51 +3,79 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         NavigationView {
-            VStack {
-                Spacer()
-                
-                Image("welcome") // Make sure the image name matches your asset
+            ZStack {
+                Image("welcome") // Ensure this image is in your asset catalog
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 300, height: 200, alignment: .center)
+                    .aspectRatio(contentMode: .fill)
+                    .edgesIgnoringSafeArea(.all)
                 
-                Text("Welcome to Thryve!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
-
-                Text("Start your sustainable farming journey and grow with our community.")
-                    .padding()
-
-                // Button and Navigation Link
-                NavigationLink(destination: MissionView()) {
-                    Text("Start Farming")
-                        .foregroundColor(.white)
+                VStack {
+                    Spacer()
+                    
+                    Text("Welcome to Thryve!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
                         .padding()
-                        .background(Color.green)
-                        .cornerRadius(10)
+                    
+                    Text("Start your sustainable farming journey and grow with our community.")
+                        .foregroundColor(.green)
+                        .padding()
+                    
+                    NavigationLink(destination: MissionView()) {
+                        Text("Start Farming")
+                            .foregroundColor(.black)
+                            .padding()
+                            .background(Color.green)
+                            .cornerRadius(10)
+                    }
+                    
+                    Spacer()
                 }
-                Spacer()
             }
-            .navigationBarHidden(true) // Hide navigation bar here
+            .navigationBarHidden(true)
         }
     }
 }
 
+
 struct MissionView: View {
+    @State private var isAgreed = false
+    @State private var shouldNavigate = false
+
     var body: some View {
         VStack {
             Text("Mission & User Agreements")
                 .font(.title)
                 .padding()
-            
+
             ScrollView {
                 Text("Here you can add the details for your mission and user agreements...")
                     .padding()
             }
+
+            Spacer()
+
+            Toggle("I have read all the terms and conditions", isOn: $isAgreed)
+                .padding()
+                .toggleStyle(SwitchToggleStyle(tint: .green))
+
+            Button("I Agree") {
+                if isAgreed {
+                    shouldNavigate = true
+                }
+            }
+            .foregroundColor(.white)
+            .padding()
+            .background(isAgreed ? Color.blue : Color.gray)
+            .cornerRadius(10)
+            .disabled(!isAgreed)
+
+            NavigationLink(destination: RoadMapView(), isActive: $shouldNavigate) { EmptyView() }
+
+            Spacer()
         }
-        .navigationTitle("Mission & User Agreements") // Set navigation title here
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitle("Mission & User Agreements", displayMode: .inline)
     }
 }
 
