@@ -3,22 +3,9 @@ import SwiftUI
 struct pickCountry: View {
     @State private var selectedCountry = "USA"
     @State private var selectedLandSize = "small"
+    @State private var navigateToShopping = false
     let countries = ["USA", "Canada", "Mexico", "Brazil", "UK"]
     let landSizes = ["small", "medium", "large"]
-
-    // Computed property to determine the budget based on land size
-    var budget: Int {
-        switch selectedLandSize {
-        case "small":
-            return 1000
-        case "medium":
-            return 5000
-        case "large":
-            return 10000
-        default:
-            return 1000  // Default case to handle unexpected values
-        }
-    }
 
     var body: some View {
         VStack {
@@ -41,20 +28,33 @@ struct pickCountry: View {
             }
             .pickerStyle(MenuPickerStyle())
             .padding()
-
-            // Display the budget based on the selected land size
-            Text("Budget: $\(budget)")
+            
+            Text("Budget: $\(budget(for: selectedLandSize))")
                 .padding()
 
             Button("Submit") {
-                // Handle the submission logic here
-                print("Submission Confirmed with budget of $\(budget)")
+                navigateToShopping = true
             }
             .foregroundColor(.white)
             .padding()
             .background(Color.green)
             .cornerRadius(10)
             .padding()
+
+            NavigationLink("", destination: ShoppingView(), isActive: $navigateToShopping)
+        }
+    }
+
+    private func budget(for landSize: String) -> Int {
+        switch landSize {
+        case "small":
+            return 1000
+        case "medium":
+            return 5000
+        case "large":
+            return 10000
+        default:
+            return 1000
         }
     }
 }
