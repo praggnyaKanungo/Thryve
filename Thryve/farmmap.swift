@@ -257,224 +257,222 @@ struct FarmMapView: View {
     @State private var navigateToShopping = false
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Background farm image - corrected name to "crop" as specified
-                Image("crop") // This is the correct image name in Assets
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .edgesIgnoringSafeArea(.all)
-                
-                VStack {
-                    // Top bar with coins
-                    HStack {
-                        // Inventory button
-                        Button(action: {
-                            showingInventory = true
-                        }) {
-                            HStack {
-                                Image(systemName: "leaf.arrow.triangle.circlepath")
-                                Text("Inventory")
-                            }
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.green)
-                            .cornerRadius(10)
-                        }
-                        
-                        Spacer()
-                        
-                        // Coins display
+        ZStack {
+            // Background farm image - corrected name to "crop" as specified
+            Image("crop") // This is the correct image name in Assets
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .edgesIgnoringSafeArea(.all)
+            
+            VStack {
+                // Top bar with coins
+                HStack {
+                    // Inventory button
+                    Button(action: {
+                        showingInventory = true
+                    }) {
                         HStack {
-                            Image(systemName: "dollarsign.circle.fill")
-                                .foregroundColor(.yellow)
-                            
-                            Text("\(coinsManager.totalCoins)")
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
+                            Image(systemName: "leaf.arrow.triangle.circlepath")
+                            Text("Inventory")
                         }
+                        .foregroundColor(.white)
                         .padding(10)
-                        .background(Color.black.opacity(0.5))
+                        .background(Color.green)
                         .cornerRadius(10)
                     }
-                    .padding()
                     
                     Spacer()
                     
-                    // Farm grid
-                    VStack(spacing: 30) {
-                        ForEach(0..<farmManager.rows, id: \.self) { row in
-                            HStack(spacing: 40) {
-                                ForEach(0..<farmManager.columns, id: \.self) { column in
-                                    let index = row * farmManager.columns + column
-                                    if index < farmManager.plots.count {
-                                        FarmPlotView(
-                                            plot: farmManager.plots[index],
-                                            isSelected: farmManager.selectedPlotIndex == index,
-                                            action: {
-                                                farmManager.selectedPlotIndex = index
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                    // Coins display
+                    HStack {
+                        Image(systemName: "dollarsign.circle.fill")
+                            .foregroundColor(.yellow)
+                        
+                        Text("\(coinsManager.totalCoins)")
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
                     }
-                    .padding()
-                    
-                    Spacer()
-                    
-                    // Bottom action bar
-                    HStack(spacing: 15) {
-                        // Till button
-                        Button(action: {
-                            if let index = farmManager.selectedPlotIndex {
-                                let success = farmManager.tillPlot(plotIndex: index)
-                                if !success {
-                                    actionErrorMessage = "Cannot till this plot right now"
-                                    showingActionError = true
-                                }
-                            } else {
-                                actionErrorMessage = "Select a plot first"
-                                showingActionError = true
-                            }
-                        }) {
-                            VStack {
-                                Image(systemName: "leaf.fill")
-                                Text("Till")
-                            }
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.brown)
-                            .cornerRadius(10)
-                        }
-                        
-                        // Plant button
-                        Button(action: {
-                            if let index = farmManager.selectedPlotIndex {
-                                if farmManager.plots[index].status == .tilled {
-                                    showingPlantSelection = true
-                                } else {
-                                    actionErrorMessage = "Till the plot before planting"
-                                    showingActionError = true
-                                }
-                            } else {
-                                actionErrorMessage = "Select a plot first"
-                                showingActionError = true
-                            }
-                        }) {
-                            VStack {
-                                Image(systemName: "leaf.arrow.circlepath")
-                                Text("Plant")
-                            }
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.green)
-                            .cornerRadius(10)
-                        }
-                        
-                        // Water button
-                        Button(action: {
-                            if let index = farmManager.selectedPlotIndex {
-                                let success = farmManager.waterPlot(plotIndex: index)
-                                if !success {
-                                    actionErrorMessage = "Cannot water this plot right now"
-                                    showingActionError = true
-                                }
-                            } else {
-                                actionErrorMessage = "Select a plot first"
-                                showingActionError = true
-                            }
-                        }) {
-                            VStack {
-                                Image(systemName: "drop.fill")
-                                Text("Water")
-                            }
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.blue)
-                            .cornerRadius(10)
-                        }
-                        
-                        // Harvest button
-                        Button(action: {
-                            if let index = farmManager.selectedPlotIndex {
-                                let success = farmManager.harvestPlot(plotIndex: index)
-                                if !success {
-                                    actionErrorMessage = "Not ready to harvest yet"
-                                    showingActionError = true
-                                }
-                            } else {
-                                actionErrorMessage = "Select a plot first"
-                                showingActionError = true
-                            }
-                        }) {
-                            VStack {
-                                Image(systemName: "scissors")
-                                Text("Harvest")
-                            }
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.orange)
-                            .cornerRadius(10)
-                        }
-                        
-                        // Next Day button
-                        Button(action: {
-                            farmManager.advanceDay()
-                        }) {
-                            VStack {
-                                Image(systemName: "calendar")
-                                Text("Next Day")
-                            }
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.purple)
-                            .cornerRadius(10)
-                        }
-                    }
-                    .padding()
+                    .padding(10)
                     .background(Color.black.opacity(0.5))
-                    .cornerRadius(15)
-                    .padding()
+                    .cornerRadius(10)
                 }
+                .padding()
                 
-                // Navigation link to shopping
-                NavigationLink("", destination: ShoppingView(), isActive: $navigateToShopping)
-                    .hidden()
-            }
-            .navigationTitle("Your Farm")
-            .sheet(isPresented: $showingInventory) {
-                PlantSelectionView { plant in
-                    if let index = farmManager.selectedPlotIndex {
-                        let success = farmManager.plantInPlot(plotIndex: index, plant: plant)
-                        if !success {
-                            actionErrorMessage = "Could not plant here"
-                            showingActionError = true
+                Spacer()
+                
+                // Farm grid
+                VStack(spacing: 30) {
+                    ForEach(0..<farmManager.rows, id: \.self) { row in
+                        HStack(spacing: 40) {
+                            ForEach(0..<farmManager.columns, id: \.self) { column in
+                                let index = row * farmManager.columns + column
+                                if index < farmManager.plots.count {
+                                    FarmPlotView(
+                                        plot: farmManager.plots[index],
+                                        isSelected: farmManager.selectedPlotIndex == index,
+                                        action: {
+                                            farmManager.selectedPlotIndex = index
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
-                    showingInventory = false
                 }
-            }
-            .sheet(isPresented: $showingPlantSelection) {
-                PlantSelectionView { plant in
-                    if let index = farmManager.selectedPlotIndex {
-                        let success = farmManager.plantInPlot(plotIndex: index, plant: plant)
-                        if !success {
-                            actionErrorMessage = "Could not plant here"
+                .padding()
+                
+                Spacer()
+                
+                // Bottom action bar
+                HStack(spacing: 15) {
+                    // Till button
+                    Button(action: {
+                        if let index = farmManager.selectedPlotIndex {
+                            let success = farmManager.tillPlot(plotIndex: index)
+                            if !success {
+                                actionErrorMessage = "Cannot till this plot right now"
+                                showingActionError = true
+                            }
+                        } else {
+                            actionErrorMessage = "Select a plot first"
                             showingActionError = true
                         }
+                    }) {
+                        VStack {
+                            Image(systemName: "leaf.fill")
+                            Text("Till")
+                        }
+                        .foregroundColor(.white)
+                        .padding(10)
+                        .background(Color.brown)
+                        .cornerRadius(10)
                     }
-                    showingPlantSelection = false
+                    
+                    // Plant button
+                    Button(action: {
+                        if let index = farmManager.selectedPlotIndex {
+                            if farmManager.plots[index].status == .tilled {
+                                showingPlantSelection = true
+                            } else {
+                                actionErrorMessage = "Till the plot before planting"
+                                showingActionError = true
+                            }
+                        } else {
+                            actionErrorMessage = "Select a plot first"
+                            showingActionError = true
+                        }
+                    }) {
+                        VStack {
+                            Image(systemName: "leaf.arrow.circlepath")
+                            Text("Plant")
+                        }
+                        .foregroundColor(.white)
+                        .padding(10)
+                        .background(Color.green)
+                        .cornerRadius(10)
+                    }
+                    
+                    // Water button
+                    Button(action: {
+                        if let index = farmManager.selectedPlotIndex {
+                            let success = farmManager.waterPlot(plotIndex: index)
+                            if !success {
+                                actionErrorMessage = "Cannot water this plot right now"
+                                showingActionError = true
+                            }
+                        } else {
+                            actionErrorMessage = "Select a plot first"
+                            showingActionError = true
+                        }
+                    }) {
+                        VStack {
+                            Image(systemName: "drop.fill")
+                            Text("Water")
+                        }
+                        .foregroundColor(.white)
+                        .padding(10)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                    }
+                    
+                    // Harvest button
+                    Button(action: {
+                        if let index = farmManager.selectedPlotIndex {
+                            let success = farmManager.harvestPlot(plotIndex: index)
+                            if !success {
+                                actionErrorMessage = "Not ready to harvest yet"
+                                showingActionError = true
+                            }
+                        } else {
+                            actionErrorMessage = "Select a plot first"
+                            showingActionError = true
+                        }
+                    }) {
+                        VStack {
+                            Image(systemName: "scissors")
+                            Text("Harvest")
+                        }
+                        .foregroundColor(.white)
+                        .padding(10)
+                        .background(Color.orange)
+                        .cornerRadius(10)
+                    }
+                    
+                    // Next Day button
+                    Button(action: {
+                        farmManager.advanceDay()
+                    }) {
+                        VStack {
+                            Image(systemName: "calendar")
+                            Text("Next Day")
+                        }
+                        .foregroundColor(.white)
+                        .padding(10)
+                        .background(Color.purple)
+                        .cornerRadius(10)
+                    }
                 }
+                .padding()
+                .background(Color.black.opacity(0.5))
+                .cornerRadius(15)
+                .padding()
             }
-            .alert(isPresented: $showingActionError) {
-                Alert(
-                    title: Text("Action Failed"),
-                    message: Text(actionErrorMessage),
-                    dismissButton: .default(Text("OK"))
-                )
+            
+            // Navigation link to shopping
+            NavigationLink("", destination: ShoppingView(), isActive: $navigateToShopping)
+                .hidden()
+        }
+        .navigationTitle("Your Farm")
+        .sheet(isPresented: $showingInventory) {
+            PlantSelectionView { plant in
+                if let index = farmManager.selectedPlotIndex {
+                    let success = farmManager.plantInPlot(plotIndex: index, plant: plant)
+                    if !success {
+                        actionErrorMessage = "Could not plant here"
+                        showingActionError = true
+                    }
+                }
+                showingInventory = false
             }
+        }
+        .sheet(isPresented: $showingPlantSelection) {
+            PlantSelectionView { plant in
+                if let index = farmManager.selectedPlotIndex {
+                    let success = farmManager.plantInPlot(plotIndex: index, plant: plant)
+                    if !success {
+                        actionErrorMessage = "Could not plant here"
+                        showingActionError = true
+                    }
+                }
+                showingPlantSelection = false
+            }
+        }
+        .alert(isPresented: $showingActionError) {
+            Alert(
+                title: Text("Action Failed"),
+                message: Text(actionErrorMessage),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 }

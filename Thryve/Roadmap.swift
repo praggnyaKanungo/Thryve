@@ -6,59 +6,57 @@ struct RoadMapView: View {
     @State private var navigateToCountryPicker = false // Controls navigation
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                Image(backgroundImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                    .edgesIgnoringSafeArea(.all)
+        ZStack {
+            Image(backgroundImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                .edgesIgnoringSafeArea(.all)
 
-                // Pins for each region
-                pinView(region: "Australia", imageName: "AustraliaImage")
-                    .offset(x: +150, y: -120)
-                pinView(region: "North America", imageName: "NorthAmericaImage")
-                    .offset(x: -160, y: -250)
-                pinView(region: "South America", imageName: "SouthAmericaImage")
-                    .offset(x: -125, y: -150)
-                pinView(region: "East Asia", imageName: "EastAsiaImage")
-                    .offset(x: +135, y: -250)
-                pinView(region: "South Asia", imageName: "SouthAsiaImage")
-                    .offset(x: +60, y: -200)
-                pinView(region: "Europe", imageName: "EuropeImage")
-                    .offset(x: -25, y: -250)
-                pinView(region: "Africa", imageName: "AfricaImage")
-                    .offset(x: -30, y: -175)
+            // Pins for each region
+            pinView(region: "Australia", imageName: "AustraliaImage")
+                .offset(x: +150, y: -120)
+            pinView(region: "North America", imageName: "NorthAmericaImage")
+                .offset(x: -160, y: -250)
+            pinView(region: "South America", imageName: "SouthAmericaImage")
+                .offset(x: -125, y: -150)
+            pinView(region: "East Asia", imageName: "EastAsiaImage")
+                .offset(x: +135, y: -250)
+            pinView(region: "South Asia", imageName: "SouthAsiaImage")
+                .offset(x: +60, y: -200)
+            pinView(region: "Europe", imageName: "EuropeImage")
+                .offset(x: -25, y: -250)
+            pinView(region: "Africa", imageName: "AfricaImage")
+                .offset(x: -30, y: -175)
 
-                // Instructional text card, visible only when no region is selected
-                if selectedRegion == nil {
-                    instructionalCard
-                        .transition(.move(edge: .bottom))
-                        .centerHorizontally() // Center in the view
-                }
-
-                // "Use this region" button, shown only after a region is selected
-                if let region = selectedRegion {
-                    Button("Use this region") {
-                        self.navigateToCountryPicker = true
-                    }
-                    .font(.title)
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .transition(.scale)
+            // Instructional text card, visible only when no region is selected
+            if selectedRegion == nil {
+                instructionalCard
+                    .transition(.move(edge: .bottom))
                     .centerHorizontally() // Center in the view
-                }
-
-                // Navigation link to navigate to PickCountry
-                NavigationLink(
-                    destination: PickCountry(selectedCountry: selectedRegion ?? ""),
-                    isActive: $navigateToCountryPicker
-                ) { EmptyView() }
             }
-            .navigationBarTitle("Select a Region", displayMode: .inline)
+
+            // "Use this region" button, shown only after a region is selected
+            if let region = selectedRegion {
+                Button("Use this region") {
+                    self.navigateToCountryPicker = true
+                }
+                .font(.title)
+                .padding()
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .transition(.scale)
+                .centerHorizontally() // Center in the view
+            }
+
+            // Navigation link to navigate to PickCountry
+            NavigationLink(
+                destination: PickCountry(selectedCountry: selectedRegion ?? ""),
+                isActive: $navigateToCountryPicker
+            ) { EmptyView() }
         }
+        .navigationBarTitle("Select a Region", displayMode: .inline)
     }
 
     @ViewBuilder

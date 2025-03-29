@@ -478,59 +478,57 @@ struct ShoppingView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Main content
-                VStack {
-                    // Search bar
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                        
-                        TextField("Search plants", text: $searchText)
-                            .foregroundColor(.primary)
-                        
-                        if !searchText.isEmpty {
-                            Button(action: {
-                                searchText = ""
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                    }
-                    .padding(10)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
+        ZStack {
+            // Main content
+            VStack {
+                // Search bar
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
                     
-                    // Plant grid
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
-                            ForEach(filteredPlants) { plant in
-                                Button(action: {
-                                    viewModel.selectedPlant = plant
-                                    viewModel.quantity = 1
-                                }) {
-                                    PlantGridItem(plant: plant)
-                                }
-                            }
+                    TextField("Search plants", text: $searchText)
+                        .foregroundColor(.primary)
+                    
+                    if !searchText.isEmpty {
+                        Button(action: {
+                            searchText = ""
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.gray)
                         }
-                        .padding()
                     }
                 }
+                .padding(10)
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+                .padding(.horizontal)
                 
-                // Overlays
-                overlayViews
-                
-                // Hidden navigation to farming
-                NavigationLink("", destination: FarmMapView(), isActive: $navigateToFarming)
-                    .hidden()
+                // Plant grid
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                        ForEach(filteredPlants) { plant in
+                            Button(action: {
+                                viewModel.selectedPlant = plant
+                                viewModel.quantity = 1
+                            }) {
+                                PlantGridItem(plant: plant)
+                            }
+                        }
+                    }
+                    .padding()
+                }
             }
-            .navigationTitle("Plant Shop")
-            .toolbar {
-                toolbarContent
-            }
+            
+            // Overlays
+            overlayViews
+            
+            // Hidden navigation to farming
+            NavigationLink("", destination: FarmMapView(), isActive: $navigateToFarming)
+                .hidden()
+        }
+        .navigationTitle("Plant Shop")
+        .toolbar {
+            toolbarContent
         }
     }
     
