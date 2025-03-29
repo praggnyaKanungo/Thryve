@@ -1,25 +1,16 @@
 import SwiftUI
 
-struct pickCountry: View {
-    @State private var selectedCountry = "USA"
+struct PickCountry: View {
+    var selectedCountry: String // Passed from the map
     @State private var selectedLandSize = "small"
     @State private var navigateToShopping = false
-    let countries = ["USA", "Canada", "Mexico", "Brazil", "UK"]
     let landSizes = ["small", "medium", "large"]
 
     var body: some View {
         VStack {
-            Text("Select your countries")
+            Text("Select options for \(selectedCountry)")
                 .font(.headline)
                 .padding()
-
-            Picker("Country", selection: $selectedCountry) {
-                ForEach(countries, id: \.self) { country in
-                    Text(country)
-                }
-            }
-            .pickerStyle(MenuPickerStyle())
-            .padding()
 
             Picker("Land Size", selection: $selectedLandSize) {
                 ForEach(landSizes, id: \.self) { size in
