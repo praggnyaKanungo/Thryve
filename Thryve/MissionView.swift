@@ -5,10 +5,14 @@
 //  Created by Praggnya Kanungo on 3/29/25.
 //
 import SwiftUI
+import PDFKit
 
 struct MissionView: View {
     @State private var isAgreed = false
     @State private var shouldNavigate = false
+
+    // Define the URL of the PDF
+    let pdfURL = Bundle.main.url(forResource: "terms_and_conditions", withExtension: "pdf")!
 
     var body: some View {
         VStack {
@@ -16,10 +20,10 @@ struct MissionView: View {
                 .font(.title)
                 .padding()
 
-            ScrollView {
-                Text("Here you can add the details for your mission and user agreements...")
-                    .padding()
-            }
+            // PDFView embedded in a ScrollView
+            PDFViewer(pdfURL: pdfURL)
+                .frame(height: 500) // Adjust the height to fit your design
+                .padding()
 
             Spacer()
 
@@ -44,4 +48,21 @@ struct MissionView: View {
         }
         .navigationBarTitle("Mission & User Agreements", displayMode: .inline)
     }
+}
+
+struct PDFViewer: UIViewRepresentable {
+    var pdfURL: URL
+
+    func makeUIView(context: Context) -> PDFView {
+        let pdfView = PDFView()
+        pdfView.autoScales = true
+        pdfView.displayMode = .singlePageContinuous
+        pdfView.displayDirection = .vertical
+        if let document = PDFDocument(url: pdfURL) {
+            pdfView.document = document
+        }
+        return pdfView
+    }
+
+    func updateUIView(_ uiView: PDFView, context: Context) {}
 }
