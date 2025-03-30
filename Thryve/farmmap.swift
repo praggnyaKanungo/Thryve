@@ -6,9 +6,9 @@ class FarmMapManager: ObservableObject {
     static let shared = FarmMapManager()
     
     // Number of plots in the farm
-    let rows = 3
-    let columns = 4
-    let totalPlots = 12
+    var rows = 3
+    var columns = 4
+    var totalPlots = 12
     
     // Farm plots array
     @Published var plots: [FarmPlot] = [] {
@@ -20,28 +20,67 @@ class FarmMapManager: ObservableObject {
     // Currently selected plot
     @Published var selectedPlotIndex: Int?
     
-    // Initialize with saved farm data if available
+    // Session identifier to track different game sessions
+    private var currentSessionId: String = ""
+    
+    // Initialize with no farm data
     private init() {
+        // No loading of farm data on initial startup
+        initializeEmptyFarm()
+    }
+    
+    // Initialize farm with empty plots
+    private func initializeEmptyFarm() {
+        plots.removeAll()
+        for i in 0..<totalPlots {
+            plots.append(FarmPlot(id: i))
+        }
+        selectedPlotIndex = nil
+    }
+    
+    // Setup farm with selected region and size
+    func setupFarm(regionId: String, rows: Int, columns: Int) {
+        // Create a new session ID
+        let newSessionId = "\(regionId)_\(rows)x\(columns)_\(UUID().uuidString)"
+        
+        // If session changed, clear the farm
+        if currentSessionId != newSessionId {
+            // Update farm dimensions
+            self.rows = rows
+            self.columns = columns
+            self.totalPlots = rows * columns
+            
+            // Clear existing plots
+            resetFarm()
+            
+            // Save new session ID
+            currentSessionId = newSessionId
+            UserDefaults.standard.set(currentSessionId, forKey: "currentFarmSession")
+        }
+        
+        // Try to load saved data for this specific session
         loadFarmData()
         
-        // If no saved data, create empty plots
-        if plots.isEmpty {
-            for i in 0..<totalPlots {
-                plots.append(FarmPlot(id: i))
-            }
+        // If no saved data for this session, create empty plots
+        if plots.isEmpty || plots.count != totalPlots {
+            initializeEmptyFarm()
         }
     }
     
-    // Save farm data to UserDefaults
+    // Save farm data to UserDefaults with session identifier
     private func saveFarmData() {
+        guard !currentSessionId.isEmpty else { return }
+        
         if let encoded = try? JSONEncoder().encode(plots) {
-            UserDefaults.standard.set(encoded, forKey: "farmPlots")
+            UserDefaults.standard.set(encoded, forKey: "farmPlots_\(currentSessionId)")
         }
     }
     
-    // Load farm data from UserDefaults
+    // Load farm data from UserDefaults for current session
     private func loadFarmData() {
-        if let savedFarmData = UserDefaults.standard.data(forKey: "farmPlots"),
+        guard !currentSessionId.isEmpty else { return }
+        
+        if let savedFarmData = UserDefaults.standard.data(forKey: "farmPlots_\(currentSessionId)"),
            let decodedFarmData = try? JSONDecoder().decode([FarmPlot].self, from: savedFarmData) {
             plots = decodedFarmData
         }
@@ -149,9 +188,17 @@ class FarmMapManager: ObservableObject {
     
     // Reset farm (for testing/reset)
     func resetFarm() {
-        for i in 0..<plots.count {
-            plots[i] = FarmPlot(id: i)
-        }
+        initializeEmptyFarm()
+    }
+    
+    // Method to call when starting a new game
+    func startNewGame() {
+        // Clear the current session ID
+        currentSessionId = ""
+        UserDefaults.standard.removeObject(forKey: "currentFarmSession")
+        
+        // Reset the farm
+        resetFarm()
     }
 }
 
