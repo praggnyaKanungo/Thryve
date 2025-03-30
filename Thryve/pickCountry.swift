@@ -8,6 +8,7 @@ struct PickCountry: View {
 
     // Reference to CoinsManager
     @ObservedObject private var coinsManager = CoinsManager.shared
+    @ObservedObject private var plantCatalog = PlantCatalog.shared
     
     // Get background image based on selected country
     private var backgroundImageName: String {
@@ -97,7 +98,13 @@ struct PickCountry: View {
                     
                     // Submit button
                     Button(action: {
+                        // Set the selected region in the plant catalog
+                        plantCatalog.setRegion(selectedCountry)
+                        
+                        // Set the starting budget
                         coinsManager.totalCoins = budget(for: selectedLandSize)
+                        
+                        // Navigate to shopping
                         navigateToShopping = true
                     }) {
                         Text("Start Farming")
@@ -129,6 +136,7 @@ struct PickCountry: View {
             }
             
             NavigationLink("", destination: ShoppingView(), isActive: $navigateToShopping)
+                .hidden()
         }
         .navigationBarTitle("", displayMode: .inline)
     }

@@ -339,15 +339,28 @@ struct PlantGridItem: View {
             .frame(height: 100)
             .cornerRadius(10)
             
-            Text(plant.name)
-                .font(.caption)
-                .fontWeight(.medium)
-                .lineLimit(1)
-            
-            Text("$\(plant.price, specifier: "%.2f")")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(plant.name)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                
+                Text(plant.category)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                
+                Text("$\(plant.price, specifier: "%.2f")")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 5)
         }
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
         .padding(.vertical, 5)
     }
 }
@@ -366,37 +379,12 @@ class ShoppingViewModel: ObservableObject {
     // Reference to shared managers
     private let coinsManager = CoinsManager.shared
     private let inventoryManager = InventoryManager.shared
+    private let plantCatalog = PlantCatalog.shared
     
-    // Sample plants available in the shop
-    let availablePlants: [Plant] = [
-        Plant(
-            id: UUID(),
-            name: "Tomato",
-            description: "Red, juicy fruit that's technically a berry. Great for salads and sauces.",
-            careInstructions: "Water regularly, provide support for vines, and harvest when fully red.",
-            price: 20,
-            imageName: "tomato",
-            growthTime: 3,
-            waterNeeds: "Medium",
-            sunNeeds: "Full sun",
-            category: "Vegetable",
-            harvestValue: 40
-        ),
-        Plant(
-            id: UUID(),
-            name: "Carrot",
-            description: "Orange root vegetable, sweet and crunchy. Good source of vitamins.",
-            careInstructions: "Grow in loose soil, thin seedlings, keep soil consistently moist.",
-            price: 15,
-            imageName: "carrot",
-            growthTime: 3,
-            waterNeeds: "Medium",
-            sunNeeds: "Full sun",
-            category: "Vegetable",
-            harvestValue: 30
-        ),
-        // Add more plants here...
-    ]
+    // Get region-specific plants
+    var availablePlants: [Plant] {
+        return plantCatalog.getPlantsForSelectedRegion()
+    }
     
     // Add item to cart with coin check
     func addToCart(plant: Plant, quantity: Int) -> Bool {
@@ -467,20 +455,100 @@ struct ShoppingView: View {
     @StateObject private var viewModel = ShoppingViewModel()
     @State private var searchText = ""
     @State private var navigateToFarming = false
+    @State private var showCategoryFilter = false
+    @State private var selectedCategory: String? = nil
     
-    // Filtered plants based on search
+    // Filtered plants based on search and category
     var filteredPlants: [Plant] {
-        if searchText.isEmpty {
-            return viewModel.availablePlants
-        } else {
-            return viewModel.availablePlants.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        var plants = viewModel.availablePlants
+        
+        // Filter by search text
+        if !searchText.isEmpty {
+            plants = plants.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
+        
+        // Filter by category if selected
+        if let category = selectedCategory {
+            plants = plants.filter { $0.category == category }
+        }
+        
+        return plants
+    }
+    
+    // Available categories from current available plants
+    var availableCategories: [String] {
+        let categories = Set(viewModel.availablePlants.map { $0.category })
+        return Array(categories).sorted()
     }
     
     var body: some View {
         ZStack {
             // Main content
             VStack {
+                // Region indicator and filtering options
+                if let region = PlantCatalog.shared.getSelectedRegion() {
+                    HStack {
+                        Text("Region: \(region)")
+                            .font(.headline)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 12)
+                            .background(Color.green.opacity(0.2))
+                            .cornerRadius(10)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            showCategoryFilter.toggle()
+                        }) {
+                            HStack {
+                                Text(selectedCategory ?? "All Categories")
+                                    .font(.subheadline)
+                                
+                                Image(systemName: "chevron.down")
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 12)
+                            .background(Color.secondary.opacity(0.2))
+                            .cornerRadius(10)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    if showCategoryFilter {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                Button(action: {
+                                    selectedCategory = nil
+                                    showCategoryFilter = false
+                                }) {
+                                    Text("All")
+                                        .padding(.vertical, 5)
+                                        .padding(.horizontal, 10)
+                                        .background(selectedCategory == nil ? Color.green : Color.green.opacity(0.2))
+                                        .foregroundColor(selectedCategory == nil ? .white : .primary)
+                                        .cornerRadius(10)
+                                }
+                                
+                                ForEach(availableCategories, id: \.self) { category in
+                                    Button(action: {
+                                        selectedCategory = category
+                                        showCategoryFilter = false
+                                    }) {
+                                        Text(category)
+                                            .padding(.vertical, 5)
+                                            .padding(.horizontal, 10)
+                                            .background(selectedCategory == category ? Color.green : Color.green.opacity(0.2))
+                                            .foregroundColor(selectedCategory == category ? .white : .primary)
+                                            .cornerRadius(10)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                        .padding(.bottom, 5)
+                    }
+                }
+                
                 // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
@@ -504,18 +572,35 @@ struct ShoppingView: View {
                 .padding(.horizontal)
                 
                 // Plant grid
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
-                        ForEach(filteredPlants) { plant in
-                            Button(action: {
-                                viewModel.selectedPlant = plant
-                                viewModel.quantity = 1
-                            }) {
-                                PlantGridItem(plant: plant)
+                if filteredPlants.isEmpty {
+                    Spacer()
+                    VStack(spacing: 10) {
+                        Image(systemName: "leaf.arrow.triangle.circlepath")
+                            .font(.system(size: 50))
+                            .foregroundColor(.green.opacity(0.7))
+                        
+                        Text("No plants found")
+                            .font(.headline)
+                        
+                        Text("Try a different search or category")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                            ForEach(filteredPlants) { plant in
+                                Button(action: {
+                                    viewModel.selectedPlant = plant
+                                    viewModel.quantity = 1
+                                }) {
+                                    PlantGridItem(plant: plant)
+                                }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
             }
             
@@ -690,6 +775,8 @@ struct ShoppingView: View {
 // Preview provider
 struct ShoppingView_Previews: PreviewProvider {
     static var previews: some View {
-        ShoppingView()
+        NavigationView {
+            ShoppingView()
+        }
     }
 }
