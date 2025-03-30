@@ -1,9 +1,5 @@
-
-
-
 import SwiftUI
 
-// Donation info view
 struct DonationInfoView: View {
     @ObservedObject var farmManager = FarmMapManager.shared
     @Environment(\.presentationMode) var presentationMode
@@ -23,7 +19,6 @@ struct DonationInfoView: View {
                     .multilineTextAlignment(.center)
                     .padding()
                 
-                // Progress to next donation
                 VStack {
                     Text("Progress to next donation:")
                         .font(.headline)
@@ -103,7 +98,6 @@ struct DonationInfoView: View {
         }
     }
     
-    // Format date for donation history
     func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
