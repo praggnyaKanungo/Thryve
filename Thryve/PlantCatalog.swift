@@ -1,15 +1,12 @@
 import SwiftUI
 import Combine
 
-// Catalog of available plants
 class PlantCatalog: ObservableObject {
     static let shared = PlantCatalog()
     
-    // Published property to store the selected region
     @Published var selectedRegion: String?
     
     var allPlants: [Plant] = [
-        // North America: Corn, Soybeans
         Plant(
             id: UUID(),
             name: "Corn",
@@ -37,7 +34,6 @@ class PlantCatalog: ObservableObject {
             harvestValue: 40
         ),
         
-        // South America: Wheat, Sorghum
         Plant(
             id: UUID(),
             name: "Wheat",
@@ -65,7 +61,6 @@ class PlantCatalog: ObservableObject {
             harvestValue: 35
         ),
         
-        // Europe: Barley, Oats
         Plant(
             id: UUID(),
             name: "Barley",
@@ -93,7 +88,6 @@ class PlantCatalog: ObservableObject {
             harvestValue: 28
         ),
         
-        // Africa: Sweet Potatoes, Beans
         Plant(
             id: UUID(),
             name: "Sweet Potatoes",
@@ -121,7 +115,6 @@ class PlantCatalog: ObservableObject {
             harvestValue: 25
         ),
         
-        // South Asia: Rice, Millets
         Plant(
             id: UUID(),
             name: "Rice",
@@ -149,7 +142,6 @@ class PlantCatalog: ObservableObject {
             harvestValue: 30
         ),
         
-        // East Asia: Sugar Beets, Oilseeds
         Plant(
             id: UUID(),
             name: "Sugar Beets",
@@ -177,7 +169,6 @@ class PlantCatalog: ObservableObject {
             harvestValue: 32
         ),
         
-        // Australia: Apples, Grapes
         Plant(
             id: UUID(),
             name: "Apples",
@@ -205,7 +196,6 @@ class PlantCatalog: ObservableObject {
             harvestValue: 70
         ),
         
-        // Additional plants (available in all regions)
         Plant(
             id: UUID(),
             name: "Tomato",
@@ -299,7 +289,6 @@ class PlantCatalog: ObservableObject {
         )
     ]
     
-    // Dictionary to map regions to their plants
     private let regionToPlants: [String: [String]] = [
         "North America": ["Corn", "Soybeans"],
         "South America": ["Wheat", "Sorghum"],
@@ -310,51 +299,40 @@ class PlantCatalog: ObservableObject {
         "Australia": ["Apples", "Grapes"]
     ]
     
-    // Common plants available in all regions
     private let commonPlants = [
         "Tomato", "Carrot", "Strawberry", "Sunflower",
         "Basil", "Watermelon", "Rose"
     ]
     
-    // Set the selected region
     func setRegion(_ region: String) {
         selectedRegion = region
-        // Notify observers that the region has changed
         objectWillChange.send()
     }
     
-    // Get the current selected region
     func getSelectedRegion() -> String? {
         return selectedRegion
     }
     
-    // Get plants for the selected region
     func getPlantsForSelectedRegion() -> [Plant] {
         guard let region = selectedRegion else {
-            return allPlants // Return all plants if no region is selected
+            return allPlants 
         }
         
-        // Get the specific plants for this region
         let regionSpecificPlantNames = regionToPlants[region] ?? []
         
-        // Filter plants based on region
         return allPlants.filter { plant in
-            // Include plant if it's specific to the region or if it's a common plant
             return regionSpecificPlantNames.contains(plant.name) || commonPlants.contains(plant.name)
         }
     }
     
-    // Get plant by ID
     func getPlant(id: UUID) -> Plant? {
         return allPlants.first { $0.id == id }
     }
     
-    // Get plant by name
     func getPlant(name: String) -> Plant? {
         return allPlants.first { $0.name == name }
     }
     
-    // Get plants by category
     func getPlants(category: String) -> [Plant] {
         return allPlants.filter { $0.category == category }
     }
