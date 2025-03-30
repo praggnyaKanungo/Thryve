@@ -39,6 +39,8 @@ struct RoadMapView: View {
             // "Use this region" button, shown only after a region is selected
             if let region = selectedRegion {
                 Button("Use this region") {
+                    // Reset the app state before proceeding to a new region
+                    AppStateManager.shared.resetAppState()
                     self.navigateToCountryPicker = true
                 }
                 .font(.title)
@@ -94,5 +96,3 @@ extension View {
         self.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
-
-

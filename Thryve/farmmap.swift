@@ -240,10 +240,38 @@ class FarmMapManager: ObservableObject {
         calendar.advanceDay()
     }
     
+    /*
     // Reset farm (for testing/reset)
     func resetFarm() {
         for i in 0..<plots.count {
             plots[i] = FarmPlot(id: i)
         }
+    }
+     */
+}
+
+// FarmMap manager extension with improved reset functionality
+extension FarmMapManager {
+    // Enhanced reset farm function
+    func resetFarm() {
+        // Clear all plots
+        for i in 0..<plots.count {
+            plots[i] = FarmPlot(id: i)
+        }
+        
+        // Reset selection
+        selectedPlotIndex = nil
+        
+        // Reset donation tracking
+        totalSuccessfulHarvests = 0
+        donations = []
+        
+        // Remove farm data from UserDefaults
+        UserDefaults.standard.removeObject(forKey: "farmPlots")
+        UserDefaults.standard.removeObject(forKey: "totalSuccessfulHarvests")
+        UserDefaults.standard.removeObject(forKey: "donations")
+        
+        // Re-save empty farm
+        saveFarmData()
     }
 }

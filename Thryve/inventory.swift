@@ -82,10 +82,12 @@ class InventoryManager: ObservableObject {
         }
     }
     
+    /*
     // Clear inventory (for testing/reset)
     func clearInventory() {
         items = []
     }
+    */
     
     // Add starter items for new players
     func addStarterItems() {
@@ -98,5 +100,16 @@ class InventoryManager: ObservableObject {
         if let carrotPlant = PlantCatalog.shared.getPlant(name: "Carrot") {
             addItem(plant: carrotPlant, quantity: 3)
         }
+    }
+}
+
+// Inventory manager extension with improved reset functionality
+extension InventoryManager {
+    // Clear inventory (for testing/reset)
+    func clearInventory() {
+        items = []
+        
+        // Remove from UserDefaults
+        UserDefaults.standard.removeObject(forKey: "playerInventory")
     }
 }

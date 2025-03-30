@@ -131,16 +131,25 @@ class GameCalendar: ObservableObject {
     private func loadCalendarData() {
         if let day = UserDefaults.standard.object(forKey: "gameDay") as? Int {
             currentDay = day
+        } else {
+            // Default to day 1 if no saved data
+            currentDay = 1
         }
         
         if let seasonRaw = UserDefaults.standard.string(forKey: "gameSeason"),
            let season = Season(rawValue: seasonRaw) {
             currentSeason = season
+        } else {
+            // Default to spring if no saved data
+            currentSeason = .spring
         }
         
         if let weatherRaw = UserDefaults.standard.string(forKey: "gameWeather"),
            let weather = WeatherType(rawValue: weatherRaw) {
             currentWeather = weather
+        } else {
+            // Default to sunny if no saved data
+            currentWeather = .sunny
         }
     }
     
@@ -187,7 +196,7 @@ class GameCalendar: ObservableObject {
         return adjustedGrowth * plantSpecificMultiplier
     }
     
-    // Reset calendar (for testing)
+    // Reset calendar (for testing or starting a new game)
     func resetCalendar() {
         currentDay = 1
         currentSeason = .spring

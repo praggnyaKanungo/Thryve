@@ -100,6 +100,22 @@ class GameTimerManager: ObservableObject {
         }
     }
     
+    // Reset the timer completely (for starting a new game)
+    func resetTimer() {
+        // Stop any running timer
+        pauseTimer()
+        
+        // Reset properties
+        isTimerRunning = false
+        timeRemaining = dayDuration
+        daysSinceStart = 0
+        
+        // Clear saved timer state
+        UserDefaults.standard.removeObject(forKey: "gameTimerRunning")
+        UserDefaults.standard.removeObject(forKey: "gameTimeRemaining")
+        UserDefaults.standard.removeObject(forKey: "gameDaysSinceStart")
+    }
+    
     // Format remaining time as a string (MM:SS)
     var formattedTimeRemaining: String {
         let minutes = Int(timeRemaining) / 60
