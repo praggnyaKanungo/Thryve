@@ -448,6 +448,8 @@ struct ShoppingView: View {
     
     var body: some View {
         ZStack {
+            Color(red: 205/255, green: 230/255, blue: 245/255)
+                            .edgesIgnoringSafeArea(.all)
             VStack {
                 if let region = PlantCatalog.shared.getSelectedRegion() {
                     HStack {
