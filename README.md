@@ -14,23 +14,31 @@
 ## Installations:
 1. git clone https://github.com/praggnyaKanungo/Thryve.git
 2. Install XCode (only compatible for macs)
-3. 
+3. cd Thryve
+4. open Thryve.xcodeproj
+5. build and run the project on the computer (must have a macOS to run the project)
 
 ## Usage:
 1. Choose a farming region.
 2. Select farm size (small, medium, large)
 3. Purchase tools and seeds to plant
-4. Plant into soil and grow
+4. Plant into soil and grow 
 5. Watch your seedling grow into full blown crops!
 
 ## Technologies:
-### 1. XCode
-### 2. Swift
+1. XCode
+2. Swift
 
 ## Contributing:
+We welcome contributions to Thryve! 
+1. Fork the repository
+2. Create a feature branch (git chechkout -b feature/new-feature)
+3. Commit your changes (git commit -m 'Add new feature')
+4. Push to the branch (git push origin feature/new-feature)
+5. Open a Pull request
 
 ## Contacts: 
-### Rachana Chengari - rachanac@vt.edu
-### Mridula Thulasiraman - thulasiramanmt@vt.edu
-### Swathi Vijayakumar - swathiv@vt.edu
-### Praggnya Kanungo - ufx9hn@virginia.edu
+Rachana Chengari - rachanac@vt.edu
+Mridula Thulasiraman - thulasiramanmt@vt.edu
+Swathi Vijayakumar - swathiv@vt.edu
+Praggnya Kanungo - ufx9hn@virginia.edu
