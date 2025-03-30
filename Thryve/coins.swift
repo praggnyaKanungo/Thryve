@@ -1,50 +1,39 @@
 import SwiftUI
 
-// Coin manager class to track and manage user's coins across the app
 class CoinsManager: ObservableObject {
-    // Singleton instance for app-wide access
     static let shared = CoinsManager()
     
-    // Available coins - published so views can observe changes
     @Published var totalCoins: Int = 1000 {
         didSet {
-            // Save to UserDefaults whenever coins change
             UserDefaults.standard.set(totalCoins, forKey: "userCoins")
         }
     }
     
-    // Transaction history
     @Published var transactions: [CoinTransaction] = []
     
-    // Initialize with saved coins if available
     private init() {
         if let savedCoins = UserDefaults.standard.object(forKey: "userCoins") as? Int {
             totalCoins = savedCoins
         }
         
-        // Load transaction history if available
         if let savedTransactions = UserDefaults.standard.data(forKey: "coinTransactions"),
            let decodedTransactions = try? JSONDecoder().decode([CoinTransaction].self, from: savedTransactions) {
             transactions = decodedTransactions
         }
     }
     
-    // Add coins (e.g. from harvesting crops, completing tasks)
     func addCoins(_ amount: Int, reason: String) {
         totalCoins += amount
         
-        // Record transaction
         let transaction = CoinTransaction(amount: amount, isSpending: false, description: reason, date: Date())
         transactions.append(transaction)
         saveTransactions()
     }
     
-    // Spend coins (returns true if successful, false if not enough coins)
     func spendCoins(_ amount: Int, reason: String) -> Bool {
         if totalCoins >= amount {
             totalCoins -= amount
             
-            // Record transaction
             let transaction = CoinTransaction(amount: amount, isSpending: true, description: reason, date: Date())
             transactions.append(transaction)
             saveTransactions()
@@ -54,41 +43,35 @@ class CoinsManager: ObservableObject {
         return false
     }
     
-    // Purchase an item (convenience method for shopping)
     func purchaseItem(name: String, price: Double) -> Bool {
         let priceInCoins = Int(price)
         return spendCoins(priceInCoins, reason: "Purchased \(name)")
     }
     
-    // Save transactions to UserDefaults
     private func saveTransactions() {
         if let encoded = try? JSONEncoder().encode(transactions) {
             UserDefaults.standard.set(encoded, forKey: "coinTransactions")
         }
     }
     
-    // Clear all transactions (for testing/reset)
     func clearTransactions() {
         transactions = []
         saveTransactions()
     }
     
-    // Reset coins to default (for testing/reset)
     func resetCoins() {
         totalCoins = 1000
         clearTransactions()
     }
 }
 
-// Model for tracking coin transactions
 struct CoinTransaction: Codable, Identifiable {
     var id = UUID()
     let amount: Int
-    let isSpending: Bool // true for spending, false for earning
+    let isSpending: Bool 
     let description: String
     let date: Date
     
-    // For display purposes
     var formattedAmount: String {
         return isSpending ? "-\(amount)" : "+\(amount)"
     }
@@ -101,7 +84,6 @@ struct CoinTransaction: Codable, Identifiable {
     }
 }
 
-// View for displaying current coin balance
 struct CoinBalanceView: View {
     @ObservedObject var coinsManager = CoinsManager.shared
     
@@ -120,7 +102,6 @@ struct CoinBalanceView: View {
     }
 }
 
-// View for displaying coin history
 struct CoinHistoryView: View {
     @ObservedObject var coinsManager = CoinsManager.shared
     
@@ -164,7 +145,6 @@ struct CoinHistoryView: View {
     }
 }
 
-// Modal popup for displaying coins
 struct CoinPopupView: View {
     @ObservedObject var coinsManager = CoinsManager.shared
     @Binding var isShowing: Bool
@@ -200,7 +180,6 @@ struct CoinPopupView: View {
             .background(Color.yellow.opacity(0.1))
             .cornerRadius(10)
             
-            // Recent transactions
             if !coinsManager.transactions.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Recent Transactions")
@@ -256,14 +235,11 @@ struct CoinPopupView: View {
     }
 }
 
-// Extension example for using in shopping view
 extension ShoppingViewModel {
-    // Function to check if there's enough coins to purchase an item
     func canPurchase(price: Double) -> Bool {
         return CoinsManager.shared.totalCoins >= Int(price)
     }
     
-    // Function to buy an item with coins
     func buyWithCoins(plantName: String, price: Double) -> Bool {
         return CoinsManager.shared.purchaseItem(name: plantName, price: price)
     }
