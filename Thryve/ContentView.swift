@@ -4,7 +4,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Image("welcome") // Ensure this image is in your asset catalog
+                Image("welcome")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .edgesIgnoringSafeArea(.all)
