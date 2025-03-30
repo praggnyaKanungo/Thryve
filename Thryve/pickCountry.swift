@@ -1,16 +1,14 @@
 import SwiftUI
 
 struct PickCountry: View {
-    var selectedCountry: String // Passed from the map
+    var selectedCountry: String 
     @State private var selectedLandSize = "small"
     @State private var navigateToShopping = false
     let landSizes = ["small", "medium", "large"]
 
-    // Reference to CoinsManager
     @ObservedObject private var coinsManager = CoinsManager.shared
     @ObservedObject private var plantCatalog = PlantCatalog.shared
     
-    // Get background image based on selected country
     private var backgroundImageName: String {
         switch selectedCountry {
         case "Australia":
@@ -28,25 +26,22 @@ struct PickCountry: View {
         case "Africa":
             return "africaBackground"
         default:
-            return "defaultBackground" // Fallback background
+            return "defaultBackground" 
         }
     }
     
     var body: some View {
         ZStack {
-            // Background image based on selected country
             Image(backgroundImageName)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                 .edgesIgnoringSafeArea(.all)
             
-            // Semi-transparent overlay for better text readability
             Color.black.opacity(0.3)
                 .edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 25) {
-                // Header with country name
                 Text("Farm in \(selectedCountry)")
                     .font(.system(size: 36, weight: .bold))
                     .foregroundColor(.white)
@@ -55,16 +50,14 @@ struct PickCountry: View {
                 
                 Spacer()
                 Spacer()
-                Spacer() // Added extra spacers to push content further down
+                Spacer() 
                 Spacer()
                 
-                // Content card
                 VStack(spacing: 20) {
                     Text("Choose your farm size")
                         .font(.headline)
                         .foregroundColor(.white)
                     
-                    // Land size picker with custom styling
                     Picker("Land Size", selection: $selectedLandSize) {
                         ForEach(landSizes, id: \.self) { size in
                             Text(size.capitalized)
@@ -76,12 +69,10 @@ struct PickCountry: View {
                     .background(Color.white.opacity(0.2))
                     .cornerRadius(8)
                     
-                    // Visualize the farm size
                     farmSizeVisualizer(for: selectedLandSize)
                         .frame(height: 100)
                         .padding(.vertical)
                     
-                    // Budget display
                     HStack {
                         Image(systemName: "dollarsign.circle.fill")
                             .font(.title2)
@@ -96,15 +87,11 @@ struct PickCountry: View {
                     .background(Color.black.opacity(0.4))
                     .cornerRadius(12)
                     
-                    // Submit button
                     Button(action: {
-                        // Set the selected region in the plant catalog
                         plantCatalog.setRegion(selectedCountry)
                         
-                        // Set the starting budget
                         coinsManager.totalCoins = budget(for: selectedLandSize)
                         
-                        // Navigate to shopping
                         navigateToShopping = true
                     }) {
                         Text("Start Farming")
@@ -128,11 +115,11 @@ struct PickCountry: View {
                 .background(Color.black.opacity(0.5))
                 .cornerRadius(20)
                 .padding(.horizontal, 20)
-                .padding(.bottom, 60) // Increased bottom padding
-                .frame(maxHeight: UIScreen.main.bounds.height * 0.5, alignment: .bottom) // Constrain to bottom 50% of screen
+                .padding(.bottom, 60) 
+                .frame(maxHeight: UIScreen.main.bounds.height * 0.5, alignment: .bottom) 
                 
                 Spacer()
-                Spacer() // Added another spacer at the bottom
+                Spacer() 
             }
             
             NavigationLink("", destination: ShoppingView(), isActive: $navigateToShopping)
@@ -141,7 +128,6 @@ struct PickCountry: View {
         .navigationBarTitle("", displayMode: .inline)
     }
     
-    // Visual representation of farm size
     @ViewBuilder
     private func farmSizeVisualizer(for size: String) -> some View {
         HStack(spacing: 5) {
