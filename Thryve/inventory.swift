@@ -12,9 +12,20 @@ class InventoryManager: ObservableObject {
         }
     }
     
-    // Initialize with saved inventory if available
+    // Current session identifier to track different game sessions
+    private var currentSessionId: String = ""
+    
+    // Initialize with no inventory
     private init() {
-        loadInventory()
+        // No loading of inventory on initial startup
+    }
+    
+    // Set the current session ID (should match FarmMapManager's session)
+    func setSession(sessionId: String) {
+        if currentSessionId != sessionId {
+            currentSessionId = sessionId
+            loadInventory() // Load inventory for this session
+        }
     }
     
     // Add item to inventory
@@ -67,27 +78,41 @@ class InventoryManager: ObservableObject {
         return Dictionary(grouping: items) { $0.plant.category }
     }
     
-    // Save inventory to UserDefaults
+    // Save inventory to UserDefaults with session identifier
     private func saveInventory() {
+        guard !currentSessionId.isEmpty else { return }
+        
         if let encoded = try? JSONEncoder().encode(items) {
-            UserDefaults.standard.set(encoded, forKey: "playerInventory")
+            UserDefaults.standard.set(encoded, forKey: "playerInventory_\(currentSessionId)")
         }
     }
     
-    // Load inventory from UserDefaults
+    // Load inventory from UserDefaults for current session
     private func loadInventory() {
-        if let savedInventory = UserDefaults.standard.data(forKey: "playerInventory"),
+        guard !currentSessionId.isEmpty else {
+            items = [] // Empty inventory if no session is set
+            return
+        }
+        
+        if let savedInventory = UserDefaults.standard.data(forKey: "playerInventory_\(currentSessionId)"),
            let decodedInventory = try? JSONDecoder().decode([InventoryItem].self, from: savedInventory) {
             items = decodedInventory
+        } else {
+            items = [] // Empty inventory if no saved data for this session
         }
     }
     
-    // Clear inventory (for testing/reset)
+    // Clear inventory
     func clearInventory() {
         items = []
     }
+    
+    // Reset inventory for a new game
+    func startNewGame() {
+        currentSessionId = ""
+        clearInventory()
+    }
 }
-
 // Inventory item model
 struct InventoryItem: Codable, Identifiable {
     var id = UUID()
