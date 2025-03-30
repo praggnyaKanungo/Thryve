@@ -1,13 +1,11 @@
 import SwiftUI
 
-// Plot status enum
 enum PlotStatus: String, Codable {
     case empty
     case tilled
     case planted
 }
 
-// Plant growth stages enum
 enum GrowthStage: String, Codable {
     case seed
     case sprout
@@ -15,7 +13,6 @@ enum GrowthStage: String, Codable {
     case mature
 }
 
-// Farm plot model
 struct FarmPlot: Codable, Identifiable {
     let id: Int
     var status: PlotStatus = .empty
@@ -24,7 +21,6 @@ struct FarmPlot: Codable, Identifiable {
     var isWatered: Bool = false
     var growthProgress: Double = 0
     
-    // Get current growth stage based on progress
     var currentGrowthStage: GrowthStage {
         guard status == .planted, growthProgress > 0 else { return .seed }
         
@@ -39,7 +35,6 @@ struct FarmPlot: Codable, Identifiable {
         }
     }
     
-    // Plant a crop in this plot
     mutating func plantCrop(plant: Plant) {
         self.plant = plant
         self.status = .planted
@@ -47,13 +42,11 @@ struct FarmPlot: Codable, Identifiable {
         self.growthProgress = 0
     }
     
-    // Check if the crop is ready to harvest
     var isReadyToHarvest: Bool {
         return status == .planted && growthProgress >= 1.0
     }
 }
 
-// Donation tracking
 struct Donation: Identifiable, Codable {
     let id: UUID
     let date: Date
