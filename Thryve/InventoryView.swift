@@ -1,29 +1,22 @@
-
 import SwiftUI
-
-// Inventory Overview View
 struct InventoryView: View {
     @ObservedObject var inventoryManager = InventoryManager.shared
     @State private var searchText = ""
     @State private var selectedCategory: String? = nil
     @Environment(\.presentationMode) var presentationMode
     
-    // Categories for filtering
     var categories: [String] {
         let categories = Set(inventoryManager.items.map { $0.plant.category })
         return Array(categories).sorted()
     }
     
-    // Filtered items based on search and category
     var filteredItems: [InventoryItem] {
         var items = inventoryManager.items
         
-        // Apply category filter
         if let category = selectedCategory {
             items = items.filter { $0.plant.category == category }
         }
         
-        // Apply search filter
         if !searchText.isEmpty {
             items = items.filter { $0.plant.name.localizedCaseInsensitiveContains(searchText) }
         }
@@ -34,7 +27,6 @@ struct InventoryView: View {
     var body: some View {
         NavigationView {
             VStack {
-                // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
@@ -56,7 +48,6 @@ struct InventoryView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
                 
-                // Category filter
                 if !categories.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
@@ -89,7 +80,6 @@ struct InventoryView: View {
                     .padding(.vertical, 8)
                 }
                 
-                // Inventory content
                 if inventoryManager.items.isEmpty {
                     Spacer()
                     VStack(spacing: 20) {
@@ -121,7 +111,6 @@ struct InventoryView: View {
                             .foregroundColor(.gray)
                         Spacer()
                     } else {
-                        // Grid of inventory items
                         ScrollView {
                             LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
                                 ForEach(filteredItems) { item in
@@ -133,7 +122,6 @@ struct InventoryView: View {
                     }
                 }
                 
-                // Close button
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
@@ -158,7 +146,6 @@ struct InventoryView: View {
     }
 }
 
-// Individual inventory item view
 struct InventoryItemView: View {
     let item: InventoryItem
     
