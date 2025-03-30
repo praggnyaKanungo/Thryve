@@ -1,10 +1,3 @@
-//
-//  AppStateManager.swift
-//  Thryve
-//
-//  Created by Praggnya Kanungo on 3/30/25.
-//
-
 import SwiftUI
 
 // This class will manage the app's state resets
