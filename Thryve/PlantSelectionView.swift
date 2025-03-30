@@ -1,8 +1,5 @@
-
-
 import SwiftUI
 
-// Plant selection view for choosing what to plant
 struct PlantSelectionView: View {
     @ObservedObject var inventoryManager = InventoryManager.shared
     @State private var navigateToShopping = false
@@ -35,7 +32,6 @@ struct PlantSelectionView: View {
                                 .cornerRadius(10)
                         }
                         
-                        // Hidden navigation link
                         NavigationLink("", destination: ShoppingView(), isActive: $navigateToShopping)
                             .hidden()
                     }
@@ -46,7 +42,6 @@ struct PlantSelectionView: View {
                                 onPlantSelected(item.plant)
                             }) {
                                 HStack {
-                                    // Plant icon
                                     ZStack {
                                         Circle()
                                             .fill(Color.green.opacity(0.3))
