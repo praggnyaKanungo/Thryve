@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Extended Plant model with additional properties
 struct Plant: Codable, Identifiable, Hashable {
     let id: UUID
     let name: String
@@ -8,20 +7,17 @@ struct Plant: Codable, Identifiable, Hashable {
     let careInstructions: String
     let price: Double
     let imageName: String
-    let growthTime: Int // in days
-    let waterNeeds: String // Low, Medium, High
-    let sunNeeds: String // Full sun, Partial shade, Shade
-    let category: String // Vegetable, Fruit, Herb, Flower, etc.
-    let harvestValue: Int // Coins earned when harvested
+    let growthTime: Int 
+    let waterNeeds: String 
+    let sunNeeds: String 
+    let category: String
+    let harvestValue: Int 
     
-    // For display
     var placeholder: String {
         return emoji
     }
     
-    // Calculate bonus harvest amount (if any)
     func calculateBonusHarvest() -> Int {
-        // Calculate chance based on rarity/quality
         let chance = Double.random(in: 0...1)
         
         if chance < 0.2 {
@@ -30,7 +26,6 @@ struct Plant: Codable, Identifiable, Hashable {
         return 0
     }
     
-    // Get emoji representation based on type
     var emoji: String {
         switch self.category {
         case "Vegetable":
@@ -73,7 +68,6 @@ struct Plant: Codable, Identifiable, Hashable {
     }
 }
 
-// Inventory item model
 struct InventoryItem: Codable, Identifiable, Hashable {
     var id = UUID()
     let plant: Plant
