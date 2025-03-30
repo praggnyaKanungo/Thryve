@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Main Farm View
 struct FarmMapView: View {
     @ObservedObject var farmManager = FarmMapManager.shared
     @ObservedObject var inventoryManager = InventoryManager.shared
@@ -20,13 +19,10 @@ struct FarmMapView: View {
     
     var body: some View {
         ZStack {
-            // Background based on season
             seasonBackground
             
             VStack {
-                // Top bar with game info
                 HStack {
-                    // Back/Shop button
                     Button(action: {
                         navigateToShopping = true
                     }) {
@@ -42,7 +38,6 @@ struct FarmMapView: View {
                     
                     Spacer()
                     
-                    // Harvest count display
                     HStack {
                         Image(systemName: "leaf.fill")
                             .foregroundColor(.green)
@@ -57,7 +52,6 @@ struct FarmMapView: View {
                     
                     Spacer()
                     
-                    // Donation progress
                     Button(action: {
                         showingDonationInfo = true
                     }) {
@@ -76,7 +70,6 @@ struct FarmMapView: View {
                     
                     Spacer()
                     
-                    // Timer display (only show when timer is running)
                     if timerManager.isTimerRunning {
                         HStack {
                             Image(systemName: "clock")
@@ -94,7 +87,6 @@ struct FarmMapView: View {
                     
                     Spacer()
                     
-                    // Calendar info
                     HStack {
                         VStack(alignment: .trailing) {
                             HStack {
@@ -120,7 +112,6 @@ struct FarmMapView: View {
                     
                     Spacer()
                     
-                    // Coins display
                     HStack {
                         Image(systemName: "dollarsign.circle.fill")
                             .foregroundColor(.yellow)
@@ -136,7 +127,6 @@ struct FarmMapView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
                 
-                // Farm grid
                 VStack(spacing: 30) {
                     ForEach(0..<farmManager.rows, id: \.self) { row in
                         HStack(spacing: 40) {
@@ -157,7 +147,6 @@ struct FarmMapView: View {
                 }
                 .padding()
                 
-                // Weather effect info
                 HStack {
                     Image(systemName: calendar.currentWeather.icon)
                         .foregroundColor(calendar.currentWeather.color)
@@ -177,9 +166,7 @@ struct FarmMapView: View {
                 .background(Color.black.opacity(0.5))
                 .cornerRadius(10)
                 
-                // Bottom action bar
                 HStack(spacing: 15) {
-                    // Till button
                     Button(action: {
                         if let index = farmManager.selectedPlotIndex {
                             let success = farmManager.tillPlot(plotIndex: index)
@@ -202,7 +189,6 @@ struct FarmMapView: View {
                         .cornerRadius(10)
                     }
                     
-                    // Plant button
                     Button(action: {
                         if let index = farmManager.selectedPlotIndex {
                             if farmManager.plots[index].status == .tilled {
@@ -226,7 +212,6 @@ struct FarmMapView: View {
                         .cornerRadius(10)
                     }
                     
-                    // Water button
                     Button(action: {
                         if let index = farmManager.selectedPlotIndex {
                             let success = farmManager.waterPlot(plotIndex: index)
@@ -249,14 +234,11 @@ struct FarmMapView: View {
                         .cornerRadius(10)
                     }
                     
-                    // Harvest button
                     Button(action: {
                         if let index = farmManager.selectedPlotIndex {
                             let success = farmManager.harvestPlot(plotIndex: index)
                             if success {
-                                // Increment harvest count when successfully harvested
                                 harvestCount += 1
-                                // Save harvest count to UserDefaults
                                 UserDefaults.standard.set(harvestCount, forKey: "playerHarvestCount")
                             } else {
                                 actionErrorMessage = "Not ready to harvest yet"
@@ -277,7 +259,6 @@ struct FarmMapView: View {
                         .cornerRadius(10)
                     }
                     
-                    // Next Day button - Only show if auto timer is not running
                     if !timerManager.isTimerRunning {
                         Button(action: {
                             farmManager.advanceDay()
@@ -292,7 +273,6 @@ struct FarmMapView: View {
                             .cornerRadius(10)
                         }
                     } else {
-                        // Show day counter when timer is running
                         VStack {
                             Image(systemName: "calendar")
                             Text("Day \(calendar.currentDay)")
@@ -309,7 +289,6 @@ struct FarmMapView: View {
                 .padding()
             }
             
-            // Navigation link to shopping
             NavigationLink("", destination: ShoppingView(), isActive: $navigateToShopping)
                 .hidden()
         }
@@ -340,41 +319,33 @@ struct FarmMapView: View {
             DonationInfoView()
         }
         .onAppear {
-            // Load saved harvest count from UserDefaults
             harvestCount = UserDefaults.standard.integer(forKey: "playerHarvestCount")
             
-            // Resume timer if it was running when view appeared
             if timerManager.isTimerRunning {
                 timerManager.resumeTimer()
             }
         }
         .onDisappear {
-            // Pause timer when view disappears
             timerManager.pauseTimer()
         }
     }
     
-    // Background based on current season and weather
     var seasonBackground: some View {
         ZStack {
-            // Base background image
-            Image("crop") // Make sure this image exists in your Assets
+            Image("crop") 
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .edgesIgnoringSafeArea(.all)
             
-            // Season overlay
             Rectangle()
                 .fill(seasonColor)
                 .blendMode(.overlay)
                 .edgesIgnoringSafeArea(.all)
             
-            // Weather effects
             weatherEffects
         }
     }
     
-    // Season-specific color overlay
     var seasonColor: Color {
         switch calendar.currentSeason {
         case .spring:
@@ -388,7 +359,6 @@ struct FarmMapView: View {
         }
     }
     
-    // Weather effects
     var weatherEffects: some View {
         Group {
             switch calendar.currentWeather {
