@@ -1,9 +1,3 @@
-//
-//  MissionView.swift
-//  Thryve
-//
-//  Created by Praggnya Kanungo on 3/29/25.
-//
 import SwiftUI
 import PDFKit
 
@@ -11,7 +5,6 @@ struct MissionView: View {
     @State private var isAgreed = false
     @State private var shouldNavigate = false
 
-    // Define the URL of the PDF
     let pdfURL = Bundle.main.url(forResource: "terms_and_conditions", withExtension: "pdf")!
 
     var body: some View {
@@ -20,9 +13,8 @@ struct MissionView: View {
                 .font(.title)
                 .padding()
 
-            // PDFView embedded in a ScrollView
             PDFViewer(pdfURL: pdfURL)
-                .frame(height: 500) // Adjust the height to fit your design
+                .frame(height: 500) 
                 .padding()
 
             Spacer()
