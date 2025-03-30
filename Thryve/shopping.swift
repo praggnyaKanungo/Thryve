@@ -1,13 +1,11 @@
 import SwiftUI
 
-// Cart item model
 struct CartItem: Identifiable {
     let id = UUID()
     let plant: Plant
     var quantity: Int
 }
 
-// MARK: - Plant Detail View Component
 struct PlantDetailView: View {
     let plant: Plant
     let quantity: Int
@@ -18,7 +16,6 @@ struct PlantDetailView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Header with plant name and close button
             HStack {
                 Text(plant.name)
                     .font(.title)
@@ -33,7 +30,6 @@ struct PlantDetailView: View {
                 }
             }
             
-            // Plant image placeholder
             ZStack {
                 Rectangle()
                     .fill(Color.green.opacity(0.3))
@@ -45,7 +41,6 @@ struct PlantDetailView: View {
                     .foregroundColor(.green)
             }
             
-            // Plant details
             Group {
                 Text("About this plant")
                     .font(.headline)
@@ -59,7 +54,6 @@ struct PlantDetailView: View {
                 Text(plant.careInstructions)
                     .font(.body)
                 
-                // Additional growing information
                 HStack(spacing: 20) {
                     VStack {
                         Image(systemName: "calendar")
@@ -82,7 +76,6 @@ struct PlantDetailView: View {
                 .padding(.vertical)
             }
             
-            // Price and purchase controls
             HStack {
                 Text("$\(plant.price, specifier: "%.2f")")
                     .font(.title2)
@@ -90,7 +83,6 @@ struct PlantDetailView: View {
                 
                 Spacer()
                 
-                // Quantity stepper
                 HStack {
                     Button(action: onQuantityDecreased) {
                         Image(systemName: "minus.circle")
@@ -123,7 +115,6 @@ struct PlantDetailView: View {
     }
 }
 
-// MARK: - Cart View Component
 struct CartView: View {
     let cartItems: [CartItem]
     let total: Double
@@ -194,13 +185,11 @@ struct CartView: View {
     }
 }
 
-// MARK: - Cart Item Row
 struct CartItemRow: View {
     let item: CartItem
     
     var body: some View {
         HStack {
-            // Plant image placeholder
             ZStack {
                 Rectangle()
                     .fill(Color.green.opacity(0.3))
@@ -232,7 +221,6 @@ struct CartItemRow: View {
     }
 }
 
-// MARK: - Checkout Success View
 struct CheckoutSuccessView: View {
     let onContinueShopping: () -> Void
     let onStartFarming: () -> Void
@@ -285,7 +273,6 @@ struct CheckoutSuccessView: View {
     }
 }
 
-// MARK: - Not Enough Coins Alert
 struct NotEnoughCoinsAlert: View {
     let onDismiss: () -> Void
     
@@ -320,13 +307,11 @@ struct NotEnoughCoinsAlert: View {
     }
 }
 
-// Individual plant grid item for shopping
 struct PlantGridItem: View {
     let plant: Plant
     
     var body: some View {
         VStack {
-            // This will be replaced with Image(plant.imageName) when you add images
             ZStack {
                 Rectangle()
                     .fill(Color.green.opacity(0.3))
@@ -365,9 +350,8 @@ struct PlantGridItem: View {
     }
 }
 
-// MARK: - Shopping View Model
 class ShoppingViewModel: ObservableObject {
-    // Shopping System
+    
     @Published var cartItems: [CartItem] = []
     @Published var selectedPlant: Plant?
     @Published var quantity: Int = 1
@@ -376,66 +360,52 @@ class ShoppingViewModel: ObservableObject {
     @Published var hasMadePurchase = false
     @Published var showNotEnoughCoinsAlert = false
     
-    // Reference to shared managers
     private let coinsManager = CoinsManager.shared
     private let inventoryManager = InventoryManager.shared
     private let plantCatalog = PlantCatalog.shared
     
-    // Get region-specific plants
     var availablePlants: [Plant] {
         return plantCatalog.getPlantsForSelectedRegion()
     }
     
-    // Add item to cart with coin check
     func addToCart(plant: Plant, quantity: Int) -> Bool {
         let totalCost = plant.price * Double(quantity)
         
-        // Check if player has enough coins
         if Double(coinsManager.totalCoins) < totalCost {
             return false
         }
         
-        // Add to cart
         if let index = cartItems.firstIndex(where: { $0.plant.id == plant.id }) {
-            // Item already in cart, update quantity
             cartItems[index].quantity += quantity
         } else {
-            // New item
             cartItems.append(CartItem(plant: plant, quantity: quantity))
         }
         
         return true
     }
     
-    // Remove item from cart
     func removeFromCart(at indexSet: IndexSet) {
         cartItems.remove(atOffsets: indexSet)
     }
     
-    // Calculate total cost
     var total: Double {
         cartItems.reduce(0) { $0 + ($1.plant.price * Double($1.quantity)) }
     }
     
-    // Checkout process
     func checkout() -> Bool {
-        // Check if player has enough coins for total
         let totalCost = total
         
         if Double(coinsManager.totalCoins) < totalCost {
             return false
         }
         
-        // Spend coins
         let success = coinsManager.spendCoins(Int(totalCost), reason: "Purchased plants from shop")
         
         if success {
-            // Add items to inventory
             for item in cartItems {
                 inventoryManager.addItem(plant: item.plant, quantity: item.quantity)
             }
             
-            // Clear cart and show confirmation
             cartItems = []
             showingCart = false
             showCheckoutSuccess = true
@@ -448,7 +418,6 @@ class ShoppingViewModel: ObservableObject {
     }
 }
 
-// MARK: - Main Shopping View
 struct ShoppingView: View {
     @ObservedObject private var coinsManager = CoinsManager.shared
     @ObservedObject private var inventoryManager = InventoryManager.shared
@@ -458,16 +427,13 @@ struct ShoppingView: View {
     @State private var showCategoryFilter = false
     @State private var selectedCategory: String? = nil
     
-    // Filtered plants based on search and category
     var filteredPlants: [Plant] {
         var plants = viewModel.availablePlants
         
-        // Filter by search text
         if !searchText.isEmpty {
             plants = plants.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
         
-        // Filter by category if selected
         if let category = selectedCategory {
             plants = plants.filter { $0.category == category }
         }
@@ -475,7 +441,6 @@ struct ShoppingView: View {
         return plants
     }
     
-    // Available categories from current available plants
     var availableCategories: [String] {
         let categories = Set(viewModel.availablePlants.map { $0.category })
         return Array(categories).sorted()
@@ -483,9 +448,7 @@ struct ShoppingView: View {
     
     var body: some View {
         ZStack {
-            // Main content
             VStack {
-                // Region indicator and filtering options
                 if let region = PlantCatalog.shared.getSelectedRegion() {
                     HStack {
                         Text("Region: \(region)")
@@ -549,7 +512,6 @@ struct ShoppingView: View {
                     }
                 }
                 
-                // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
@@ -571,7 +533,6 @@ struct ShoppingView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
                 
-                // Plant grid
                 if filteredPlants.isEmpty {
                     Spacer()
                     VStack(spacing: 10) {
@@ -604,10 +565,8 @@ struct ShoppingView: View {
                 }
             }
             
-            // Overlays
             overlayViews
             
-            // Hidden navigation to farming
             NavigationLink("", destination: FarmMapView(), isActive: $navigateToFarming)
                 .hidden()
         }
@@ -617,12 +576,8 @@ struct ShoppingView: View {
         }
     }
     
-    // MARK: - View Components
-    
-    // Overlay views (separated to reduce complexity)
     @ViewBuilder
     private var overlayViews: some View {
-        // Plant detail overlay
         if let selectedPlant = viewModel.selectedPlant {
             Color.black.opacity(0.3)
                 .edgesIgnoringSafeArea(.all)
@@ -657,7 +612,6 @@ struct ShoppingView: View {
             .animation(.easeInOut, value: viewModel.selectedPlant != nil)
         }
         
-        // Cart view overlay
         if viewModel.showingCart {
             Color.black.opacity(0.3)
                 .edgesIgnoringSafeArea(.all)
@@ -684,7 +638,6 @@ struct ShoppingView: View {
             .animation(.easeInOut, value: viewModel.showingCart)
         }
         
-        // Checkout success overlay
         if viewModel.showCheckoutSuccess {
             Color.black.opacity(0.3)
                 .edgesIgnoringSafeArea(.all)
@@ -705,7 +658,6 @@ struct ShoppingView: View {
             .animation(.spring(), value: viewModel.showCheckoutSuccess)
         }
         
-        // Not enough coins alert
         if viewModel.showNotEnoughCoinsAlert {
             Color.black.opacity(0.3)
                 .edgesIgnoringSafeArea(.all)
@@ -719,10 +671,8 @@ struct ShoppingView: View {
         }
     }
     
-    // Toolbar content (separated to reduce complexity)
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        // Left side navigation item - Map icon to Start Farming
         ToolbarItem(placement: .navigationBarLeading) {
             if viewModel.hasMadePurchase {
                 Button(action: {
@@ -735,10 +685,8 @@ struct ShoppingView: View {
             }
         }
         
-        // Right side navigation items
         ToolbarItem(placement: .navigationBarTrailing) {
             HStack(spacing: 20) {
-                // Coins display
                 HStack {
                     Image(systemName: "dollarsign.circle.fill")
                         .foregroundColor(.yellow)
@@ -747,7 +695,6 @@ struct ShoppingView: View {
                         .fontWeight(.bold)
                 }
                 
-                // Cart button
                 Button(action: {
                     viewModel.showingCart = true
                 }) {
@@ -772,7 +719,6 @@ struct ShoppingView: View {
     }
 }
 
-// Preview provider
 struct ShoppingView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
