@@ -6,6 +6,8 @@ struct PickCountry: View {
     @State private var navigateToShopping = false
     let landSizes = ["small", "medium", "large"]
 
+    // Reference to CoinsManager
+    @ObservedObject private var coinsManager = CoinsManager.shared
     var body: some View {
         VStack {
             Text("Select options for \(selectedCountry)")
@@ -24,6 +26,7 @@ struct PickCountry: View {
                 .padding()
 
             Button("Submit") {
+                coinsManager.totalCoins = budget(for: selectedLandSize)
                 navigateToShopping = true
             }
             .foregroundColor(.white)
