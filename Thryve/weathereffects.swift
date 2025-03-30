@@ -1,6 +1,5 @@
 import SwiftUI
 
-// Cloud effect
 struct CloudEffect: View {
     var body: some View {
         GeometryReader { geometry in
@@ -20,16 +19,13 @@ struct CloudEffect: View {
     }
 }
 
-// Rain effect
 struct RainEffect: View {
     var body: some View {
         ZStack {
-            // Cloud cover
             Rectangle()
                 .fill(Color.blue.opacity(0.1))
                 .edgesIgnoringSafeArea(.all)
             
-            // Rain drops
             GeometryReader { geometry in
                 ForEach(0..<40) { i in
                     RainDrop()
@@ -44,7 +40,6 @@ struct RainEffect: View {
     }
 }
 
-// Rain drop
 struct RainDrop: View {
     @State private var falling = false
     
@@ -66,18 +61,15 @@ struct RainDrop: View {
     }
 }
 
-// Storm effect
 struct StormEffect: View {
     @State private var flash = false
     
     var body: some View {
         ZStack {
-            // Darker cloud cover
             Rectangle()
                 .fill(Color.blue.opacity(0.2))
                 .edgesIgnoringSafeArea(.all)
             
-            // Lightning flash
             Rectangle()
                 .fill(Color.white)
                 .opacity(flash ? 0.3 : 0)
@@ -88,25 +80,21 @@ struct StormEffect: View {
                     }
                 }
             
-            // Heavy rain
             RainEffect()
         }
         .allowsHitTesting(false)
     }
 }
 
-// Hot effect
 struct HotEffect: View {
     @State private var waving = false
     
     var body: some View {
         ZStack {
-            // Warm overlay
             Rectangle()
                 .fill(Color.orange.opacity(0.2))
                 .edgesIgnoringSafeArea(.all)
             
-            // Heat waves
             GeometryReader { geometry in
                 ForEach(0..<8) { i in
                     Path { path in
@@ -116,7 +104,6 @@ struct HotEffect: View {
                         
                         path.move(to: CGPoint(x: 0, y: yOffset))
                         
-                        // Create wavy line
                         for x in stride(from: 0, to: width, by: 10) {
                             let sine = sin(Double(x) / 30 + Double(i) + (waving ? 10 : 0))
                             let y = yOffset + CGFloat(sine * 5)
