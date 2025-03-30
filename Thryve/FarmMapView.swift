@@ -8,6 +8,9 @@ struct FarmMapView: View {
     @ObservedObject var calendar = GameCalendar.shared
     @ObservedObject var timerManager = GameTimerManager.shared
     
+    // Add a state variable to track harvest count
+    @State private var harvestCount = 0
+    
     @State private var showingInventory = false
     @State private var showingPlantSelection = false
     @State private var showingActionError = false
@@ -36,6 +39,21 @@ struct FarmMapView: View {
                         .background(Color.green)
                         .cornerRadius(10)
                     }
+                    
+                    Spacer()
+                    
+                    // Harvest count display
+                    HStack {
+                        Image(systemName: "leaf.fill")
+                            .foregroundColor(.green)
+                        
+                        Text("Harvests: \(harvestCount)")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                    }
+                    .padding(8)
+                    .background(Color.black.opacity(0.5))
+                    .cornerRadius(10)
                     
                     Spacer()
                     
@@ -70,7 +88,8 @@ struct FarmMapView: View {
                         }
                         .padding(8)
                         .background(Color.black.opacity(0.5))
-                        .cornerRadius(10)
+                        .cornerRadius(15)
+                        .padding(.vertical, 10)
                     }
                     
                     Spacer()
@@ -234,7 +253,12 @@ struct FarmMapView: View {
                     Button(action: {
                         if let index = farmManager.selectedPlotIndex {
                             let success = farmManager.harvestPlot(plotIndex: index)
-                            if !success {
+                            if success {
+                                // Increment harvest count when successfully harvested
+                                harvestCount += 1
+                                // Save harvest count to UserDefaults
+                                UserDefaults.standard.set(harvestCount, forKey: "playerHarvestCount")
+                            } else {
                                 actionErrorMessage = "Not ready to harvest yet"
                                 showingActionError = true
                             }
@@ -268,14 +292,14 @@ struct FarmMapView: View {
                             .cornerRadius(10)
                         }
                     } else {
-                        // Show a disabled version when timer is running
+                        // Show day counter when timer is running
                         VStack {
                             Image(systemName: "calendar")
-                            Text("Auto")
+                            Text("Day \(calendar.currentDay)")
                         }
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.white)
                         .padding(10)
-                        .background(Color.purple.opacity(0.5))
+                        .background(Color.purple)
                         .cornerRadius(10)
                     }
                 }
@@ -316,6 +340,9 @@ struct FarmMapView: View {
             DonationInfoView()
         }
         .onAppear {
+            // Load saved harvest count from UserDefaults
+            harvestCount = UserDefaults.standard.integer(forKey: "playerHarvestCount")
+            
             // Resume timer if it was running when view appeared
             if timerManager.isTimerRunning {
                 timerManager.resumeTimer()
