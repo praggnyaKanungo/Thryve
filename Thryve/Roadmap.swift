@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct RoadMapView: View {
-    @State private var selectedRegion: String? // Tracks the selected region
-    @State private var backgroundImage = "newBackground" // Initial background image
-    @State private var navigateToCountryPicker = false // Controls navigation
+    @State private var selectedRegion: String? 
+    @State private var backgroundImage = "newBackground" 
+    @State private var navigateToCountryPicker = false 
     
     // Dictionary of region details (Native Plants & Description)
     let regionDetails: [String: (location: String, plants: String, description: String, position: (x: CGFloat, y: CGFloat))] = [
@@ -18,18 +18,16 @@ struct RoadMapView: View {
 
     var body: some View {
         ZStack {
-            // Base Map
             Image(backgroundImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                             .edgesIgnoringSafeArea(.all)
             
-            // Pins for each region
             ForEach(regionDetails.keys.sorted(), id: \.self) { region in
                 if let details = regionDetails[region] {
                     Button(action: {
-                        self.selectedRegion = region // Update the selected region
+                        self.selectedRegion = region 
                     }) {
                         VStack {
                             Image(systemName: "mappin.circle.fill")
@@ -43,7 +41,6 @@ struct RoadMapView: View {
                 }
             }
 
-            // Information card for selected region
             if let region = selectedRegion, let details = regionDetails[region] {
                 VStack {
                     Text(details.location)
@@ -76,7 +73,6 @@ struct RoadMapView: View {
                     .offset(y: 165)
             }
 
-            // Navigation to Country Picker
             NavigationLink(
                 destination: PickCountry(selectedCountry: selectedRegion ?? ""),
                 isActive: $navigateToCountryPicker
